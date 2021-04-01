@@ -104,21 +104,28 @@ async function main() {
 	await renderToFile( path.join( 'eslintrc.json.ejs' ), path.join( workspaceDir, '.eslintrc.json' ), { workspace, app } );
 	await renderToFile( path.join( 'tsconfig.base.json.ejs' ), path.join( workspaceDir, 'tsconfig.base.json' ), { workspace, app } );
 
-	const nxAppHtml = await fse.readFile( path.join( appDir, 'src', 'app', 'app.component.html' ) );
+	const appSourceDir = path.join( appDir, 'src' );
+	const appModuleDir = path.join( appSourceDir, 'app' );
+	const appLandingDir = path.join( appModuleDir, 'landing' );
 
-	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.html.ejs' ), path.join( appDir, 'src', 'app', 'landing', 'landing.component.html' ), { workspace, app, nxAppHtml } );
-	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.scss.ejs' ), path.join( appDir, 'src', 'app', 'landing', 'landing.component.scss' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.spec.ts.ejs' ), path.join( appDir, 'src', 'app', 'landing', 'landing.component.spec.ts' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.ts.ejs' ), path.join( appDir, 'src', 'app', 'landing', 'landing.component.ts' ), { workspace, app } );
+	const nxAppHtml = await fse.readFile( path.join( appModuleDir, 'app.component.html' ) );
+	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.html.ejs' ), path.join( appLandingDir, 'landing.component.html' ), { workspace, app, nxAppHtml } );
+	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.scss.ejs' ), path.join( appLandingDir, 'landing.component.scss' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.spec.ts.ejs' ), path.join( appLandingDir, 'landing.component.spec.ts' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'landing', 'landing.component.ts.ejs' ), path.join( appLandingDir, 'landing.component.ts' ), { workspace, app } );
 
+	await renderToFile( path.join( 'apps', '<app>', 'material.module.ts.ejs' ), path.join( appModuleDir, 'material.module.ts' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'app-routing.module.ts.ejs' ), path.join( appModuleDir, 'app-routing.module.ts' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'app.component.scss.ejs' ), path.join( appModuleDir, 'app.component.scss' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'app.component.html.ejs' ), path.join( appModuleDir, 'app.component.html' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'app.component.spec.ts.ejs' ), path.join( appModuleDir, 'app.component.spec.ts' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'app.module.ts.ejs' ), path.join( appModuleDir, 'app.module.ts' ), { workspace, app } );
 
-	await renderToFile( path.join( 'apps', '<app>', 'material.module.ts.ejs' ), path.join( appDir, 'src', 'app', 'material.module.ts' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>', 'app-routing.module.ts.ejs' ), path.join( appDir, 'src', 'app', 'app-routing.module.ts' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>', 'app.component.scss.ejs' ), path.join( appDir, 'src', 'app', 'app.component.scss' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>', 'app.component.html.ejs' ), path.join( appDir, 'src', 'app', 'app.component.html' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>', 'app.module.ts.ejs' ), path.join( appDir, 'src', 'app', 'app.module.ts' ), { workspace, app } );
-	await renderToFile( path.join( 'apps', '<app>-e2e', 'eslintrc.json.ejs' ), path.join( appDir, 'eslintrc.json' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'test-setup.ts.ejs' ), path.join( appSourceDir, 'test-setup.ts' ), { workspace, app } );
 
+	await renderToFile( path.join( 'apps', '<app>', 'jest.config.js.ejs' ), path.join( appDir, 'jest.config.js' ), { workspace, app } );
+
+	await renderToFile( path.join( 'apps', '<app>-e2e', 'eslintrc.json.ejs' ), path.join( appDir, '.eslintrc.json' ), { workspace, app } );
 	execSync( 'nx run-many --target=lint --all --fix', { cwd: workspaceDir } );
 }
 

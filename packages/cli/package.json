@@ -1,7 +1,7 @@
 {
   "name": "create-material-angular-workspace",
   "version": "0.0.1",
-  "description": "Builds a preconfigured angular workspace using Nx with material and NgRx",
+  "description": "Builds a preconfigured angular workspace using Nx with Angular Material and NgRx",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ben-tbotlabs/create-material-angular-workspace"
