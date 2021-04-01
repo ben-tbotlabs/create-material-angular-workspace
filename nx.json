@@ -1,0 +1,22 @@
+{
+  "npmScope": "create-material-angular-workspace",
+  "affected": { "defaultBase": "master" },
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "tsconfig.base.json": "*",
+    "tslint.json": "*",
+    ".eslintrc.json": "*",
+    "nx.json": "*"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
+    }
+  },
+  "projects": {
+    "cli": { "tags": ["scope:public", "type:util", "target:all"] }
+  },
+  "workspaceLayout": { "appsDir": "packages", "libsDir": "packages" }
+}

@@ -1,0 +1,111 @@
+{
+  "root": true,
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nrwl/nx", "simple-import-sort", "import", "prefer-arrow"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "@nrwl/nx/enforce-module-boundaries": [
+          "error",
+          {
+            "enforceBuildableLibDependency": true,
+            "allow": [],
+            "depConstraints": [
+              { "sourceTag": "*", "onlyDependOnLibsWithTags": ["*"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": [
+        "plugin:@nrwl/nx/typescript",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+      ],
+      "parserOptions": {
+        "ecmaVersion": 6
+      },
+      "env": { "es6": true },
+      "rules": {
+        "indent": ["error", "tab", { "SwitchCase": 1 }],
+        "array-bracket-spacing": ["error", "always"],
+        "object-curly-spacing": ["error", "always"],
+        "space-in-parens": ["error", "always"],
+        "keyword-spacing": ["error", { "before": true, "after": true }],
+        "block-spacing": ["error", "always"],
+        "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "arrow-spacing": ["error", { "before": true, "after": true }],
+        "template-curly-spacing": ["error", "always"],
+        "semi-spacing": ["error", { "before": false, "after": true }],
+        "brace-style": ["error", "stroustrup"],
+        "space-unary-ops": "error",
+        "arrow-body-style": ["error", "as-needed"],
+        "space-infix-ops": ["error", { "int32Hint": false }],
+        "space-before-blocks": ["error"],
+        "prefer-template": "error",
+        "quotes": ["error", "single", { "avoidEscape": true }],
+        "curly": "error",
+        "func-call-spacing": ["error", "never"],
+        "no-mixed-spaces-and-tabs": "error",
+        "no-multiple-empty-lines": [
+          "error",
+          { "max": 2, "maxEOF": 0, "maxBOF": 1 }
+        ],
+        "lines-between-class-members": [
+          "error",
+          "always",
+          { "exceptAfterSingleLine": true }
+        ],
+        "padding-line-between-statements": [
+          "error",
+          { "blankLine": "always", "prev": "*", "next": "function" },
+          { "blankLine": "always", "prev": "*", "next": "export" }
+        ],
+        "@typescript-eslint/type-annotation-spacing": [
+          "error",
+          {
+            "before": false,
+            "after": true,
+            "overrides": { "arrow": { "before": true, "after": true } }
+          }
+        ],
+        "eqeqeq": ["error", "smart"],
+        "object-shorthand": "error",
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
+        "import/first": "error",
+        "import/newline-after-import": "error",
+        "import/no-duplicates": "error",
+        "prefer-arrow/prefer-arrow-functions": [
+          "error",
+          {
+            "disallowPrototype": true,
+            "singleReturnOnly": false,
+            "classPropertiesAllowed": false,
+            "allowStandaloneDeclarations": true
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.spec.ts", "*.spec.tsx"],
+      "parserOptions": {
+        "project": "./tsconfig.*?.json"
+      },
+      "rules": {
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-return": "off"
+      }
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nrwl/nx/javascript"],
+      "rules": {}
+    }
+  ]
+}
