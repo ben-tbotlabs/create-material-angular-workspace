@@ -1,17 +1,15 @@
-[![NPM version][npm-image]][npm-url]
-
-<hr>
-
 # `> npx create-material-angular-workspace`
 
-Creates an [Nx Workspace](https://nx.dev/) that includes:
+![npm](https://img.shields.io/npm/v/create-material-angular-workspace?color=blue&logo=npm&style=flat-square)
+
+> Builds a preconfigured Angular workspace using Nx with Angular Material and NgRx
+
+Creates an [Nx Workspace](https://nx.dev/) that is preconfigured for
 
 -   [Angular Material](https://material.angular.io/)
 -   [Angular Flexbox](https://github.com/angular/flex-layout)
     -   Helpful documentation at [A Complete Guide to Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 -   [NgRx](https://ngrx.io/)
-
-already preconfigured
 
 # Getting Started
 
