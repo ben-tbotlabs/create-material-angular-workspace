@@ -1,11 +1,7 @@
 {
   "name": "create-material-angular-workspace",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Builds a preconfigured angular workspace using Nx with Angular Material and NgRx",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ben-tbotlabs/create-material-angular-workspace"
-  },
   "keywords": [
     "Monorepo",
     "Angular",
@@ -15,6 +11,12 @@
   ],
   "bin": {
     "create-material-angular-workspace": "./src/index.js"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ben-tbotlabs/create-material-angular-workspace#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ben-tbotlabs/create-material-angular-workspace"
   },
   "scripts": {
     "nuke": "npm rm --global $npm_package_name"

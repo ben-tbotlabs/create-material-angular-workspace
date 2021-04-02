@@ -1,3 +1,5 @@
+[![NPM version][npm-image]][npm-url]
+
 <hr>
 
 # `> npx create-material-angular-workspace`
@@ -25,7 +27,7 @@ The `create-material-angular-workspace` command will ask you to select the works
 
 ```
 ? Workspace name (e.g., org name)     exampleorg
-? Application name					  my-material-app
+? Application name                    my-material-app
 ```
 
 ## Serving Application
