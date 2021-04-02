@@ -1,6 +1,6 @@
 {
   "name": "create-material-angular-workspace",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Builds a preconfigured Angular workspace using Nx with Angular Material and NgRx",
   "keywords": [
     "Monorepo",
