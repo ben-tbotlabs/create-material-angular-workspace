@@ -11,6 +11,8 @@ Creates an [Nx Workspace](https://nx.dev/) that is preconfigured for
     -   Helpful documentation at [A Complete Guide to Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 -   [NgRx](https://ngrx.io/)
 
+Note: It also updates all packages to the latest version
+
 # Getting Started
 
 ## Creating an Nx Angular Workspace with Angular Material and NgRx
