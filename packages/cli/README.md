@@ -13,12 +13,12 @@ already preconfigured
 
 # Getting Started
 
-## Creating an Nx Workspace
+## Creating an Nx Angular Workspace with Angular Material and NgRx
 
 ### Using npx
 
 ```
-npx create-nx-workspace
+npx create-material-angular-workspace
 ```
 
 The `create-material-angular-workspace` command will ask you to select the workspace and application names.
