@@ -1,6 +1,6 @@
 # `> npx create-material-angular-workspace`
 
-![npm](https://img.shields.io/npm/v/create-material-angular-workspace?color=blue&logo=npm&style=flat-square)
+[![npm](https://img.shields.io/npm/v/create-material-angular-workspace?color=blue&logo=npm&style=flat-square)](https://www.npmjs.com/package/create-material-angular-workspace)
 
 > Builds a preconfigured Angular workspace using Nx with Angular Material and NgRx
 
