@@ -13,7 +13,7 @@
     "create-material-angular-workspace": "./src/index.js"
   },
   "license": "MIT",
-  "homepage": "https://github.com/ben-tbotlabs/create-material-angular-workspace/tree/main/packages/cli#readme",
+  "homepage": "https://github.com/ben-tbotlabs/create-material-angular-workspace#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ben-tbotlabs/create-material-angular-workspace"

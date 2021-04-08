@@ -5,9 +5,10 @@
   "scripts": {
     "nuke": "npm unlink $npm_package_name && rimraf coverage && rimraf dist && rimraf node_modules",
     "nuke:lock": "rimraf package-lock.json && npm run nuke",
-    "relink": "cd dist/packages/cli && npm run nuke && cd ../../.. && nx build cli && cd dist/packages/cli && npm link && cd ../../..",
+    "relink": "cd dist/packages/cli && npm run nuke && cd ../../.. && npm run readme && nx build cli && cd dist/packages/cli && npm link && cd ../../..",
     "delink": "cd dist/packages/cli && npm run nuke && cd ../../..",
-    "deploy": "cd dist/packages/cli && npm publish && cd ../../..",
+    "deploy": "npm run readme && nx build cli && cd dist/packages/cli && npm publish && cd ../../..",
+    "readme": "write-if c -i=README.md -o=packages/cli/README.md",
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
