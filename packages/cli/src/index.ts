@@ -95,13 +95,18 @@ async function main() {
 	execSync( 'npm install --save-dev eslint-plugin-prefer-arrow', { cwd: workspaceDir } );
 	execSync( 'npm install --save-dev eslint-plugin-simple-import-sort', { cwd: workspaceDir } );
 
-	//Add useful utility packages
+	// Add useful utility packages
 	execSync( 'npm install await-to-js', { cwd: workspaceDir } );
+
+	// Extended Jest Functionality
+	execSync( 'npm install --save-dev jest-chain', { cwd: workspaceDir } );
+	execSync( 'npm install --save-dev jest-extended', { cwd: workspaceDir } );
 
 	await renderToFile( path.join( 'vscode', 'extensions.json.ejs' ), path.join( workspaceDir, '.vscode', 'extensions.json' ), { workspace, app } );
 	await renderToFile( path.join( 'vscode', 'settings.json.ejs' ), path.join( workspaceDir, '.vscode', 'settings.json' ), { workspace, app } );
 	await renderToFile( path.join( 'editorconfig.ejs' ), path.join( workspaceDir, '.editorconfig' ), { workspace, app } );
 	await renderToFile( path.join( 'eslintrc.json.ejs' ), path.join( workspaceDir, '.eslintrc.json' ), { workspace, app } );
+	await renderToFile( path.join( 'jest.preset.js.ejs' ), path.join( workspaceDir, 'jest.preset.js' ), { workspace, app } );
 	await renderToFile( path.join( 'tsconfig.base.json.ejs' ), path.join( workspaceDir, 'tsconfig.base.json' ), { workspace, app } );
 
 	const appSourceDir = path.join( appDir, 'src' );
@@ -122,6 +127,7 @@ async function main() {
 	await renderToFile( path.join( 'apps', '<app>', 'app.module.ts.ejs' ), path.join( appModuleDir, 'app.module.ts' ), { workspace, app } );
 
 	await renderToFile( path.join( 'apps', '<app>', 'test-setup.ts.ejs' ), path.join( appSourceDir, 'test-setup.ts' ), { workspace, app } );
+	await renderToFile( path.join( 'apps', '<app>', 'tsconfig.spec.json.ejs' ), path.join( appSourceDir, 'tsconfig.spec.json' ), { workspace, app } );
 
 	await renderToFile( path.join( 'apps', '<app>', 'jest.config.js.ejs' ), path.join( appDir, 'jest.config.js' ), { workspace, app } );
 

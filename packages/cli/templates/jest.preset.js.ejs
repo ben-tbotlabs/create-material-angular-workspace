@@ -3,7 +3,11 @@ const nxPreset = require('@nrwl/jest/preset');
 module.exports = {
 	...nxPreset,
 	collectCoverage: true,
-	coverageReporters: ['json','text'],
+	coverageReporters: [
+		'json-summary',
+		'json',
+		'text'
+	],
 	setupFilesAfterEnv: [
 		"jest-extended",
 		"jest-chain"
