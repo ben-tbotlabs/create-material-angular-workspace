@@ -68,7 +68,7 @@ async function main() {
 	const appDir = path.join( workspaceDir, 'apps', app );
 
 	// Run the default Nx create workspace setup for angular
-	execSync( `npx --yes create-nx-workspace@latest ${ workspace } --preset=angular --style=scss --linter=eslint --appName=${ app }` );
+	execSync( `npx create-nx-workspace@latest ${ workspace } --preset=angular --style=scss --linter=eslint --appName=${ app } --yes` );
 
 	// Add Angular Material
 	execSync( 'nx add @angular/material@latest --typography --animations', { cwd: workspaceDir } );
@@ -87,7 +87,7 @@ async function main() {
 	// execSync( 'nx add @angular/fire@latest', { cwd: workspaceDir } );
 
 	// Update all of the existing packages except typescript
-	execSync( 'npx --yes npm-check-updates -x "typescript" -u', { cwd: workspaceDir } );
+	execSync( 'npx npm-check-updates@latest -x "typescript" -u --yes', { cwd: workspaceDir } );
 	execSync( 'npm install --legacy-peer-deps', { cwd: workspaceDir } );
 
 	// Setup Extra ESLint plugins
