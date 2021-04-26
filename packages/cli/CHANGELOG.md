@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.1.2](https://github.com/ben-tbotlabs/create-material-angular-workspace/compare/cli-0.1.1...cli-0.1.2) (2021-04-26)
+
+
+### Bug Fixes
+
+* **npx:** :bug: More problems with npx convert to use --ignore-existing ([6c22906](https://github.com/ben-tbotlabs/create-material-angular-workspace/commit/6c22906b11dac58f578bf767c7044bb890a7eddf))
+
+
+
 ## [0.1.1](https://github.com/ben-tbotlabs/create-material-angular-workspace/compare/cli-0.1.0...cli-0.1.1) (2021-04-26)
 
 
