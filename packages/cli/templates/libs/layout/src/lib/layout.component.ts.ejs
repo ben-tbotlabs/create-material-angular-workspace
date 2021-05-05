@@ -1,0 +1,27 @@
+import { Component } from '@angular/core';
+
+@Component( {
+	template: `
+	<div class="flex flex-col h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-300">
+		<mat-toolbar color="primary">
+			<<%- app %>-layout-header></<%- app %>-layout-header>
+		</mat-toolbar>
+		<mat-sidenav-container class="flex-grow">
+			<mat-sidenav role="navigation">
+				<h1>Foo</h1>
+			</mat-sidenav>
+			<mat-sidenav-content fxFill>
+				<main>
+					<h1>Bar</h1>
+					<router-outlet></router-outlet>
+				</main>
+			</mat-sidenav-content>
+		</mat-sidenav-container>
+        <footer class="mt-auto">
+          <<%- app %>-layout-footer></<%- app %>-layout-footer>
+        </footer>
+	</div>
+	`
+} )
+export class <%- _.capitalize( app ) %>LayoutComponent {
+}

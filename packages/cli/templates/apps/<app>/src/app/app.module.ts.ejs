@@ -1,0 +1,21 @@
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
+
+import { <%- _.capitalize( app ) %>ScaffoldModule } from '@<%- workspace %>/<%- app %>/scaffold';
+
+import { AppComponent } from './app.component';
+
+@NgModule( {
+	declarations: [ AppComponent ],
+	imports: [
+		BrowserModule,
+		RouterModule,
+		BrowserAnimationsModule,
+		<%- _.capitalize( app ) %>ScaffoldModule
+	],
+	providers: [],
+	bootstrap: [ AppComponent ],
+} )
+export class AppModule {}

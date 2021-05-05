@@ -16,6 +16,7 @@
     "dependencies",
     "create-nx-workspace",
     "material",
-    "ngrx"
+    "ngrx",
+    "tailwind"
   ]
 }

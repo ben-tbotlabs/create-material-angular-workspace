@@ -1,0 +1,26 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { <%- _.capitalize( app ) %>LayoutComponent } from '@<%- workspace %>/<%- app %>/layout';
+
+const routes: Routes = [
+	{
+		path: '',
+		component: <%- _.capitalize( app ) %>LayoutComponent,
+		children: [
+			{
+				path: 'not-found',
+				loadChildren: () => import( './not-found/not-found.module' ).then( ( m ) => m.NotFoundModule ),
+			},
+		],
+	},
+	{ path: '**', redirectTo: '/not-found' },
+]
+
+@NgModule( {
+	imports: [
+		CommonModule,
+		RouterModule.forRoot( routes, { paramsInheritanceStrategy: 'always' } ),
+	]
+} )
+export class <%- _.capitalize( app ) %>RoutingModule {}

@@ -1,11 +1,19 @@
 {
+  "conventionalCommits.scopes": [
+    "cli",
+    "<%- app %>",
+    "setup",
+    "node",
+    "codegen",
+    "services"
+  ],
+  "editor.formatOnSave": true,
   "eslint.format.enable": true,
   "eslint.alwaysShowStatus": true,
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
   "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {

@@ -1,0 +1,23 @@
+<%
+	const className = _.upperFirst( _.camelCase( component ) ) + 'Component';
+	const moduleName = _.upperFirst( _.camelCase( component ) ) + 'Module';
+%> 
+import { CommonModule } from '@angular/common'
+import { NgModule } from '@angular/core'
+import { RouterModule } from '@angular/router'
+
+import { <%- className %> } from './<%- component %>.component'
+
+@NgModule( {
+	declarations: [
+		<%- className %>
+	],
+	imports: [
+		CommonModule,
+		RouterModule 
+	],
+	exports: [ 
+		<%- className %>
+	],
+} )
+export class <%- moduleName %> {}
