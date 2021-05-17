@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { LayoutPartialState } from './+state/layout/layout.reducer';
+import { selectIsSidenavOpen } from './+state/layout/layout.selectors';
 
 @Component( {
 	template: `
@@ -7,21 +12,33 @@ import { Component } from '@angular/core';
 			<<%- app %>-layout-header></<%- app %>-layout-header>
 		</mat-toolbar>
 		<mat-sidenav-container class="flex-grow">
-			<mat-sidenav role="navigation">
-				<h1>Foo</h1>
+			<mat-sidenav role="navigation" [opened]="this.isSidenavOpened$ | async" class="w-1/6">
+				<div class="p-4">
+					<button mat-icon-button [routerLink]="['/']">
+						<mat-icon>home</mat-icon>
+						Home
+					</button>
+				</div>
 			</mat-sidenav>
 			<mat-sidenav-content fxFill>
 				<main>
-					<h1>Bar</h1>
 					<router-outlet></router-outlet>
 				</main>
 			</mat-sidenav-content>
 		</mat-sidenav-container>
-        <footer class="mt-auto">
-          <<%- app %>-layout-footer></<%- app %>-layout-footer>
-        </footer>
+		<footer class="mt-auto">
+			<<%- app %>-layout-footer></<%- app %>-layout-footer>
+		</footer>
 	</div>
 	`
 } )
-export class <%- _.capitalize( app ) %>LayoutComponent {
+export class <%- _.capitalize( app ) %>LayoutComponent implements OnInit {
+
+	isSidenavOpened$!: Observable<boolean>;
+
+	constructor( private store: Store<LayoutPartialState> ) {}
+
+	ngOnInit() {
+		this.isSidenavOpened$ = this.store.pipe( select( selectIsSidenavOpen ) );
+	}
 }

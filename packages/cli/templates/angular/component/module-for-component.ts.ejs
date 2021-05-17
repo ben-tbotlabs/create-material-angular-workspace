@@ -1,10 +1,11 @@
 <%
 	const className = _.upperFirst( _.camelCase( component ) ) + 'Component';
 	const moduleName = _.upperFirst( _.camelCase( component ) ) + 'Module';
-%> 
+-%>
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { <%- _.capitalize( app ) %>MaterialModule } from '@<%- workspace %>/<%- app %>/material'
 
 import { <%- className %> } from './<%- component %>.component'
 
@@ -14,9 +15,10 @@ import { <%- className %> } from './<%- component %>.component'
 	],
 	imports: [
 		CommonModule,
-		RouterModule 
+		RouterModule,
+		<%- _.capitalize( app ) %>MaterialModule
 	],
-	exports: [ 
+	exports: [
 		<%- className %>
 	],
 } )

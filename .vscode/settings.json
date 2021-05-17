@@ -17,6 +17,7 @@
     "create-nx-workspace",
     "material",
     "ngrx",
-    "tailwind"
+    "tailwind",
+    "angular"
   ]
 }

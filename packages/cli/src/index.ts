@@ -48,7 +48,7 @@ async function determineLayout(): Promise<string> {
 	const result = await inquirer.prompt<{ layout: string }>( [
 		{
 			name: 'layout',
-			message: 'Layout (empty if defaults)         ',
+			message: 'Nx Layout (empty for default)      ',
 			type: 'string',
 		},
 	] );
@@ -69,8 +69,8 @@ async function setupNPX() {
 }
 
 function runNCU( workspaceDir: string ) {
-	execSync( `npx ${ npxForceInstall } npm-check-updates@latest -x "typescript,rxjs,@ngneat/tailwind" -u`, { cwd: workspaceDir } );
-	execSync( 'npm install --legacy-peer-deps', { cwd: workspaceDir } );
+	execSync( `npx ${ npxForceInstall } npm-check-updates@latest -x "typescript,rxjs,cypress" -u`, { cwd: workspaceDir } );
+	execSync( 'npm install', { cwd: workspaceDir } );
 }
 
 
@@ -123,7 +123,7 @@ async function main() {
 		await fse.remove( path.join( workspaceDir, 'libs' ) );
 	}
 
-	execSync( 'npm install -D @nrwl/node @nrwl/angular @angular-devkit/architect @angular-builders/custom-webpack', { cwd: workspaceDir } );
+	execSync( 'npm install -D @nrwl/node @nrwl/angular @angular-devkit/architect', { cwd: workspaceDir } );
 	execSync( `nx generate @nrwl/angular:app ${ app } --style=scss --routing=true --linter=eslint`, { cwd: workspaceDir } );
 	runNCU( workspaceDir );
 
@@ -132,18 +132,22 @@ async function main() {
 	execSync( 'nx generate @angular/material:ng-add --typography --animations', { cwd: workspaceDir } );
 
 	// Setup Tailwind
-	execSync( 'npm i -D @ngneat/tailwind@5.2.4 tailwindcss @tailwindcss/forms postcss', { cwd: workspaceDir } );
+	execSync( 'npm i -D @ngneat/tailwind@6.0.3 tailwindcss @tailwindcss/forms', { cwd: workspaceDir } );
 	const workspaceStr = await fse.readFile( path.join( workspaceDir, 'workspace.json' ), 'utf8' );
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const workspaceJson = JSON.parse( workspaceStr );
 	// build target
-	_.set( workspaceJson, `projects.${ app }.targets.build.executor`, '@angular-builders/custom-webpack:browser' );
+
+	//@angular-builders/custom-webpack Does not work with angular 12
+	// execSync( 'npm install -D @angular-builders/custom-webpack', { cwd: workspaceDir } );
+	// _.set( workspaceJson, `projects.${ app }.targets.build.executor`, '@angular-builders/custom-webpack:browser' );
+	// _.set( workspaceJson, `projects.${ app }.targets.serve.executor`, '@angular-builders/custom-webpack:dev-server' );
+	// _.set( workspaceJson, `projects.${ app }.targets.build.options.customWebpackConfig`, { path: 'webpack.config.js' } );
+	// await renderToFile( path.join( 'webpack.config.js.ejs' ), path.join( workspaceDir, 'webpack.config.js' ), { workspace, app, _ } );
+
 	_.set( workspaceJson, `projects.${ app }.targets.build.options.assets`, [ { glob: 'favicon.ico', input: `libs/${ app }/assets/src`, output: './' }, { glob: '**/*', input: `libs/${ app }/assets/src/assets`, output: 'assets' } ] );
-	_.set( workspaceJson, `projects.${ app }.targets.build.options.customWebpackConfig`, { path: 'webpack.config.js' } );
 	// serve target
-	_.set( workspaceJson, `projects.${ app }.targets.serve.executor`, '@angular-builders/custom-webpack:dev-server' );
 	await fse.outputFile( path.join( workspaceDir, 'workspace.json' ), JSON.stringify( workspaceJson, null, 2 )  );
-	await renderToFile( path.join( 'webpack.config.js.ejs' ), path.join( workspaceDir, 'webpack.config.js' ), { workspace, app, _ } );
 	await renderToFile( path.join( 'tailwind.config.js.ejs' ), path.join( workspaceDir, 'tailwind.config.js' ), { workspace, app, _ } );
 	await renderToFile( path.join( 'apps', '<app>', 'src', 'styles.css.ejs' ), path.join( appSourceDir, 'styles.scss' ), { workspace, app, _ } );
 
@@ -151,9 +155,8 @@ async function main() {
 
 	await addAngularLocalize( workspaceDir, appSourceDir );
 
-
 	//Add Angular FlexBox directives
-	execSync( 'npm install @angular/flex-layout@latest', { cwd: workspaceDir } );
+	//execSync( 'npm install @angular/flex-layout@latest', { cwd: workspaceDir } );
 
 	//Add NgRx
 	execSync( `nx g ngrx app --root --no-interactive --project ${ app } --module ${ path.join( appsRelative, app, 'src', 'app', 'app.module.ts' ) }`, { cwd: workspaceDir } );
@@ -171,7 +174,7 @@ async function main() {
 
 	runNCU( workspaceDir );
 
-	await adjustApp( workspaceDir, appDir, workspace, app );
+	await adjustApp( workspaceDir, appDir, libsDir, workspace, app );
 	await buildScaffoldForApp( workspaceDir, libsDir, workspace, app );
 	await buildLayoutForApp( workspaceDir, libsDir, workspace, app );
 	await buildMaterialForApp( workspaceDir, libsDir, workspace, app );
@@ -189,6 +192,7 @@ async function main() {
 	const tsconfigBaseJSON = JSON.parse( tsconfigBaseStr );
 	_.set( tsconfigBaseJSON, 'compilerOptions.forceConsistentCasingInFileNames', true );
 	_.set( tsconfigBaseJSON, 'compilerOptions.strict', true );
+	_.set( tsconfigBaseJSON, 'compilerOptions.noUnusedLocals', true );
 	_.set( tsconfigBaseJSON, 'compilerOptions.noImplicitReturns', true );
 	_.set( tsconfigBaseJSON, 'compilerOptions.noFallthroughCasesInSwitch', true );
 	_.set( tsconfigBaseJSON, 'angularCompilerOptions.enableI18nLegacyMessageIdFormat', false );
@@ -199,6 +203,7 @@ async function main() {
 
 	execSync( 'nx run-many --target=lint --all --fix', { cwd: workspaceDir } );
 	execSync( 'nx run-many --target=test --all', { cwd: workspaceDir } );
+	execSync( 'nx build', { cwd: workspaceDir } );
 }
 
 void ( async () => {
@@ -219,7 +224,7 @@ ${ polyfillStr }
 	await fse.outputFile( path.join( appSourceDir, 'polyfills.ts' ), polyfill  );
 }
 
-async function adjustApp( workspaceDir: string, appDir: string, workspace: string, app: string ) {
+async function adjustApp( workspaceDir: string, appDir: string, libsDir: string, workspace: string, app: string ) {
 	const appSourceDir = path.join( appDir, 'src' );
 	const appModuleDir = path.join( appSourceDir, 'app' );
 
@@ -236,8 +241,9 @@ async function adjustApp( workspaceDir: string, appDir: string, workspace: strin
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const workspaceJson = JSON.parse( workspaceStr );
 	// build target
-	_.set( workspaceJson, `projects.${ app }.targets.build.configurations.production.fileReplacements.0.replace`, path.join( 'libs', app, 'scaffold', 'src', 'environments', 'environment.ts' ) );
-	_.set( workspaceJson, `projects.${ app }.targets.build.configurations.production.fileReplacements.0.with`, path.join( 'libs', app, 'scaffold', 'src', 'environments', 'environment.prod.ts' ) );
+	const toLibs = path.relative( workspaceDir, libsDir );
+	_.set( workspaceJson, `projects.${ app }.targets.build.configurations.production.fileReplacements.0.replace`, path.join( toLibs, 'scaffold', 'src', 'environments', 'environment.ts' ) );
+	_.set( workspaceJson, `projects.${ app }.targets.build.configurations.production.fileReplacements.0.with`, path.join( toLibs, 'scaffold', 'src', 'environments', 'environment.prod.ts' ) );
 	await fse.outputFile( path.join( workspaceDir, 'workspace.json' ), JSON.stringify( workspaceJson, null, 2 )  );
 }
 
@@ -276,13 +282,19 @@ async function buildLayoutForApp( workspaceDir: string, libsDir: string, workspa
 	await renderToFile( path.join( layoutTemplateDir, 'lib', 'layout.module.ts.ejs' ), path.join( layoutSrcLibDir, `${ app }-layout.module.ts` ), { workspace, app, _ } );
 	await renderToFile( path.join( layoutTemplateDir, 'index.ts.ejs' ), path.join( layoutSrcDir, 'index.ts' ), { workspace, app, _ } );
 
+	const stateTemplateDir = path.join( layoutTemplateDir, 'lib', '+state', 'layout' );
+	const stateSrcDir = path.join( layoutSrcLibDir, '+state', 'layout' );
+	await renderToFile( path.join( stateTemplateDir, 'layout.actions.ts.ejs' ), path.join( stateSrcDir, 'layout.actions.ts' ), { workspace, app, _ } );
+	await renderToFile( path.join( stateTemplateDir, 'layout.reducer.ts.ejs' ), path.join( stateSrcDir, 'layout.reducer.ts' ), { workspace, app, _ } );
+	await renderToFile( path.join( stateTemplateDir, 'layout.selectors.ts.ejs' ), path.join( stateSrcDir, 'layout.selectors.ts' ), { workspace, app, _ } );
+
 	execSync( `nx g @nrwl/angular:module components/layout-header --project ${ app }-layout`, { cwd: workspaceDir }  );
-	execSync( `nx g @nrwl/angular:component components/layout-header --inlineStyle --inlineTemplate --project=${ app }-layout --prefix=${ app }`, { cwd: workspaceDir } );
+	execSync( `nx g @nrwl/angular:component components/layout-header --inlineStyle --inlineTemplate --skipTests --project=${ app }-layout --prefix=${ app }`, { cwd: workspaceDir } );
 	await renderToFile( path.join( 'angular', 'component', 'module-for-component.ts.ejs' ), path.join( layoutSrcLibDir, 'components', 'layout-header', 'layout-header.module.ts' ), { workspace, app, _, component: 'layout-header' } );
 	await renderToFile( path.join( layoutTemplateDir, 'lib', 'components', 'layout-header', 'layout-header.component.ts.ejs' ), path.join( layoutSrcLibDir, 'components', 'layout-header', 'layout-header.component.ts' ), { workspace, app, _ } );
 
 	execSync( `nx g @nrwl/angular:module components/layout-footer --project ${ app }-layout`, { cwd: workspaceDir }  );
-	execSync( `nx g @nrwl/angular:component components/layout-footer --inlineStyle --inlineTemplate --project=${ app }-layout --prefix=${ app }`, { cwd: workspaceDir } );
+	execSync( `nx g @nrwl/angular:component components/layout-footer --inlineStyle --inlineTemplate --skipTests --project=${ app }-layout --prefix=${ app }`, { cwd: workspaceDir } );
 	await renderToFile( path.join( 'angular', 'component', 'module-for-component.ts.ejs' ), path.join( layoutSrcLibDir, 'components', 'layout-footer', 'layout-footer.module.ts' ), { workspace, app, _, component: 'layout-footer' } );
 	await renderToFile( path.join( layoutTemplateDir, 'lib', 'components', 'layout-footer', 'layout-footer.component.ts.ejs' ), path.join( layoutSrcLibDir, 'components', 'layout-footer', 'layout-footer.component.ts' ), { workspace, app, _ } );
 }

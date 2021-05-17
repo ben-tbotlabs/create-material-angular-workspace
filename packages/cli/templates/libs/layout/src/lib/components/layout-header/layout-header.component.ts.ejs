@@ -1,12 +1,25 @@
 import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+
+import {  toggleSideNav } from '../../+state/layout/layout.actions';
 
 @Component( {
 	selector: '<%- app %>-layout-header',
 	template: `
-		<div><a routerLink="/">LOGO</a></div>
+		<div class="flex flex-row items-center">
+			<button mat-icon-button (click)="this.onToggleSidenav()">
+				<mat-icon>menu</mat-icon>
+			</button>
+			<a routerLink="/">LOGO</a>
+		</div>
 	`,
 	styles: [
 	]
 } )
 export class LayoutHeaderComponent  {
+	constructor( private store: Store ) {}
+
+	onToggleSidenav() {
+		this.store.dispatch( toggleSideNav() );
+	}
 }

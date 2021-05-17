@@ -1,0 +1,28 @@
+import { Action, createReducer, on } from '@ngrx/store';
+
+import { hideSideNav, showSideNav, toggleSideNav } from './layout.actions';
+
+export const LAYOUT_FEATURE_KEY = 'layout';
+
+export interface State {
+	opened: boolean;
+}
+
+export const initialState: State = {
+	opened: false
+}
+
+export interface LayoutPartialState {
+  readonly [LAYOUT_FEATURE_KEY]: State;
+}
+
+const layoutReducer = createReducer(
+	initialState,
+	on( showSideNav, ( state ) => ( { ...state, opened: true } ) ),
+	on( hideSideNav, ( state ) => ( { ...state, opened: false } ) ),
+	on( toggleSideNav, ( state ) => ( { ...state, opened: !state.opened } ) )
+);
+
+export function reducer( state: State | undefined, action: Action ) {
+	return layoutReducer( state, action );
+}

@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { StoreModule } from '@ngrx/store';
 import { <%- _.capitalize( app ) %>MaterialModule } from '@<%- workspace %>/<%- app %>/material';
 
+import * as fromLayout from './+state/layout/layout.reducer';
 import { LayoutFooterModule } from './components/layout-footer/layout-footer.module';
 import { LayoutHeaderModule } from './components/layout-header/layout-header.module';
 import { <%- _.capitalize( app ) %>LayoutComponent } from './<%- app %>-layout.component';
@@ -15,7 +17,9 @@ import { <%- _.capitalize( app ) %>LayoutComponent } from './<%- app %>-layout.c
 		<%- _.capitalize( app ) %>MaterialModule,
 
 		LayoutFooterModule,
-		LayoutHeaderModule
+		LayoutHeaderModule,
+
+		StoreModule.forFeature( fromLayout.LAYOUT_FEATURE_KEY, fromLayout.reducer ),
 	],
 	declarations: [
 		<%- _.capitalize( app ) %>LayoutComponent
