@@ -16,11 +16,11 @@ export interface LayoutPartialState {
   readonly [LAYOUT_FEATURE_KEY]: State;
 }
 
-const layoutReducer = createReducer(
+const layoutReducer = createReducer<State>(
 	initialState,
-	on( showSideNav, ( state ) => ( { ...state, opened: true } ) ),
-	on( hideSideNav, ( state ) => ( { ...state, opened: false } ) ),
-	on( toggleSideNav, ( state ) => ( { ...state, opened: !state.opened } ) )
+	on( showSideNav, ( state ): State => ( { ...state, opened: true } ) ),
+	on( hideSideNav, ( state ): State => ( { ...state, opened: false } ) ),
+	on( toggleSideNav, ( state ): State => ( { ...state, opened: !state.opened } ) )
 );
 
 export function reducer( state: State | undefined, action: Action ) {

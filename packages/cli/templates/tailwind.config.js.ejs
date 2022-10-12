@@ -1,8 +1,9 @@
 module.exports = {
+  important: true,
   prefix: '',
   purge: {
     enabled: process.argv.join(' ').includes('production'),
-    content: ['./apps/**/*.{html,ts}', './libs/**/*.{html,ts}'],
+    content: ['<%- layoutLib %>/apps/**/*.{html,ts}', '<%- layoutLib %>/libs/**/*.{html,ts}'],
   },
   darkMode: 'class', // or 'media' or 'class'
   theme: {

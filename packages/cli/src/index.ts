@@ -62,14 +62,26 @@ const templateDir = path.join( __dirname, '..', 'templates' );
 let npxForceInstall = '--ignore-existing'
 
 async function setupNPX() {
-	const result = await execSyncCapture( 'npx --ignore-existing' );
+	const result = await execSyncCapture( 'npx --ignore-existing __' );
 	if ( result.stdErr.includes( '--ignore-existing argument has been removed' ) ) {
 		npxForceInstall = '--yes'
 	}
 }
 
 function runNCU( workspaceDir: string ) {
-	execSync( `npx ${ npxForceInstall } npm-check-updates@latest -x "typescript,rxjs,cypress" -u`, { cwd: workspaceDir } );
+	const excluded = [
+		'rxjs',
+		'typescript',
+		'eslint',
+		'eslint-config-prettier',
+		'eslint-plugin-cypress',
+		'@typescript-eslint/eslint-plugin',
+		'@typescript-eslint/parser'
+	]
+
+	const excludes = excluded.join( ',' );
+
+	execSync( `npx ${ npxForceInstall } npm-check-updates@latest -x "${ excludes }" -u`, { cwd: workspaceDir } );
 	execSync( 'npm install', { cwd: workspaceDir } );
 }
 
@@ -91,13 +103,13 @@ async function main() {
 
 	await setupNPX();
 
-	const workspace = await determineWorkspaceName();
-	const app = await determineAppName();
-	const layout = await determineLayout();
+	// const workspace = await determineWorkspaceName();
+	// const app = await determineAppName();
+	// const layout = await determineLayout();
 
-	// const workspace = 'sandbo';
-	// const app = 'web';
-	// const layout = '';
+	const workspace = 'nx-template';
+	const app = 'admin';
+	const layout = 'web';
 
 	const workspaceDir = path.join( process.cwd(), workspace );
 
@@ -132,42 +144,42 @@ async function main() {
 	execSync( 'nx generate @angular/material:ng-add --typography --animations', { cwd: workspaceDir } );
 
 	// Setup Tailwind
-	execSync( 'npm i -D @ngneat/tailwind@6.0.3 tailwindcss @tailwindcss/forms', { cwd: workspaceDir } );
-	const workspaceStr = await fse.readFile( path.join( workspaceDir, 'workspace.json' ), 'utf8' );
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const workspaceJson = JSON.parse( workspaceStr );
-	// build target
+	execSync( `nx g @nrwl/angular:setup-tailwind --project=${ app }`, { cwd: workspaceDir } );
 
-	//@angular-builders/custom-webpack Does not work with angular 12
-	// execSync( 'npm install -D @angular-builders/custom-webpack', { cwd: workspaceDir } );
-	// _.set( workspaceJson, `projects.${ app }.targets.build.executor`, '@angular-builders/custom-webpack:browser' );
-	// _.set( workspaceJson, `projects.${ app }.targets.serve.executor`, '@angular-builders/custom-webpack:dev-server' );
-	// _.set( workspaceJson, `projects.${ app }.targets.build.options.customWebpackConfig`, { path: 'webpack.config.js' } );
-	// await renderToFile( path.join( 'webpack.config.js.ejs' ), path.join( workspaceDir, 'webpack.config.js' ), { workspace, app, _ } );
+	// execSync( 'npm i -D @ngneat/tailwind@6.0.3 tailwindcss @tailwindcss/forms', { cwd: workspaceDir } );
+	// const workspaceStr = await fse.readFile( path.join( workspaceDir, 'workspace.json' ), 'utf8' );
+	// // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	// const workspaceJson = JSON.parse( workspaceStr );
+	// // build target
 
-	_.set( workspaceJson, `projects.${ app }.targets.build.options.assets`, [ { glob: 'favicon.ico', input: `libs/${ app }/assets/src`, output: './' }, { glob: '**/*', input: `libs/${ app }/assets/src/assets`, output: 'assets' } ] );
-	// serve target
-	await fse.outputFile( path.join( workspaceDir, 'workspace.json' ), JSON.stringify( workspaceJson, null, 2 )  );
-	await renderToFile( path.join( 'tailwind.config.js.ejs' ), path.join( workspaceDir, 'tailwind.config.js' ), { workspace, app, _ } );
-	await renderToFile( path.join( 'apps', '<app>', 'src', 'styles.css.ejs' ), path.join( appSourceDir, 'styles.scss' ), { workspace, app, _ } );
+	// _.set( workspaceJson, `projects.${ app }.targets.build.options.assets`, [ { glob: 'favicon.ico', input: `libs/${ app }/assets/src`, output: './' }, { glob: '**/*', input: `libs/${ app }/assets/src/assets`, output: 'assets' } ] );
+	// // serve target
+	// await fse.outputFile( path.join( workspaceDir, 'workspace.json' ), JSON.stringify( workspaceJson, null, 2 )  );
+	// const layoutLib = layout ? `./${ layout }` : './';
+	// await renderToFile( path.join( 'tailwind.config.js.ejs' ), path.join( workspaceDir, 'tailwind.config.js' ), { workspace, app, layoutLib, _ } );
+	// await renderToFile( path.join( 'apps', '<app>', 'src', 'styles.css.ejs' ), path.join( appSourceDir, 'styles.scss' ), { workspace, app, _ } );
 
 	runNCU( workspaceDir );
 
 	await addAngularLocalize( workspaceDir, appSourceDir );
 
 	//Add Angular FlexBox directives
-	//execSync( 'npm install @angular/flex-layout@latest', { cwd: workspaceDir } );
+	execSync( 'npm install @angular/flex-layout@latest', { cwd: workspaceDir } );
 
 	//Add NgRx
-	execSync( `nx g ngrx app --root --no-interactive --project ${ app } --module ${ path.join( appsRelative, app, 'src', 'app', 'app.module.ts' ) }`, { cwd: workspaceDir } );
+	execSync( `nx g @nrwl/angular:ngrx app --module=${ path.join( appsRelative, app, 'src', 'app', 'app.module.ts' ) } --root --no-interactive`, { cwd: workspaceDir } );
 	execSync( 'npm install @ngrx/data', { cwd: workspaceDir } );
 
 	// Setup Extra ESLint plugins
-	execSync( 'npm install -D eslint-plugin-import eslint-plugin-prefer-arrow eslint-plugin-simple-import-sort', { cwd: workspaceDir } );
+	execSync( 'npm install -D eslint-plugin-import eslint-plugin-prefer-arrow eslint-plugin-simple-import-sort eslint-plugin-ngrx eslint-plugin-rxjs', { cwd: workspaceDir } );
 
 	// Add useful utility packages
 	execSync( 'npm install await-to-js', { cwd: workspaceDir } );
+	execSync( 'npm install lodash', { cwd: workspaceDir } );
+	execSync( 'npm install -D @types/lodash', { cwd: workspaceDir } );
 	execSync( 'npm install ts-custom-error', { cwd: workspaceDir } );
+	execSync( 'npm install ts-mixer', { cwd: workspaceDir } );
+
 
 	// Extended Jest Functionality
 	execSync( 'npm install -D jest-chain jest-extended', { cwd: workspaceDir } );
@@ -179,14 +191,15 @@ async function main() {
 	await buildLayoutForApp( workspaceDir, libsDir, workspace, app );
 	await buildMaterialForApp( workspaceDir, libsDir, workspace, app );
 
-	// // Add Firebase
-	// execSync( 'nx add @angular/fire@latest', { cwd: workspaceDir } );
+	// Add Firebase
+	execSync( 'npm install @angular/fire', { cwd: workspaceDir } );
 
-	await renderToFile( path.join( 'vscode', 'extensions.json.ejs' ), path.join( workspaceDir, '.vscode', 'extensions.json' ), { workspace, app, _ } );
-	await renderToFile( path.join( 'vscode', 'settings.json.ejs' ), path.join( workspaceDir, '.vscode', 'settings.json' ), { workspace, app, _ } );
-	await renderToFile( path.join( 'editorconfig.ejs' ), path.join( workspaceDir, '.editorconfig' ), { workspace, app, _ } );
-	await renderToFile( path.join( 'eslintrc.json.ejs' ), path.join( workspaceDir, '.eslintrc.json' ), { workspace, app, _ } );
-	await renderToFile( path.join( 'jest.preset.js.ejs' ), path.join( workspaceDir, 'jest.preset.js' ), { workspace, app, _ } );
+	// await renderToFile( path.join( 'vscode', 'extensions.json.ejs' ), path.join( workspaceDir, '.vscode', 'extensions.json' ), { workspace, app, _ } );
+	// await renderToFile( path.join( 'vscode', 'settings.json.ejs' ), path.join( workspaceDir, '.vscode', 'settings.json' ), { workspace, app, _ } );
+	// await renderToFile( path.join( 'editorconfig.ejs' ), path.join( workspaceDir, '.editorconfig' ), { workspace, app, _ } );
+	// await renderToFile( path.join( 'eslintrc.json.ejs' ), path.join( workspaceDir, '.eslintrc.json' ), { workspace, app, _ } );
+	// await renderToFile( path.join( 'jest.preset.js.ejs' ), path.join( workspaceDir, 'jest.preset.js' ), { workspace, app, _ } );
+
 	const tsconfigBaseStr = await fse.readFile( path.join( workspaceDir, 'tsconfig.base.json' ), 'utf8' );
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const tsconfigBaseJSON = JSON.parse( tsconfigBaseStr );
@@ -195,13 +208,14 @@ async function main() {
 	_.set( tsconfigBaseJSON, 'compilerOptions.noUnusedLocals', true );
 	_.set( tsconfigBaseJSON, 'compilerOptions.noImplicitReturns', true );
 	_.set( tsconfigBaseJSON, 'compilerOptions.noFallthroughCasesInSwitch', true );
+	_.set( tsconfigBaseJSON, 'compilerOptions.allowSyntheticDefaultImports', true );
 	_.set( tsconfigBaseJSON, 'angularCompilerOptions.enableI18nLegacyMessageIdFormat', false );
 	_.set( tsconfigBaseJSON, 'angularCompilerOptions.strictInjectionParameters', true );
 	_.set( tsconfigBaseJSON, 'angularCompilerOptions.strictInputAccessModifiers', true );
 	_.set( tsconfigBaseJSON, 'angularCompilerOptions.strictTemplates', true );
 	await fse.outputFile( path.join( workspaceDir, 'tsconfig.base.json' ), JSON.stringify( tsconfigBaseJSON, null, 2 )  );
 
-	execSync( 'nx run-many --target=lint --all --fix', { cwd: workspaceDir } );
+	execSync( 'nx run-many --target=lint --all --fix --parallel --maxParallel=8', { cwd: workspaceDir } );
 	execSync( 'nx run-many --target=test --all', { cwd: workspaceDir } );
 	execSync( 'nx build', { cwd: workspaceDir } );
 }
@@ -244,6 +258,8 @@ async function adjustApp( workspaceDir: string, appDir: string, libsDir: string,
 	const toLibs = path.relative( workspaceDir, libsDir );
 	_.set( workspaceJson, `projects.${ app }.targets.build.configurations.production.fileReplacements.0.replace`, path.join( toLibs, 'scaffold', 'src', 'environments', 'environment.ts' ) );
 	_.set( workspaceJson, `projects.${ app }.targets.build.configurations.production.fileReplacements.0.with`, path.join( toLibs, 'scaffold', 'src', 'environments', 'environment.prod.ts' ) );
+	_.set( workspaceJson, 'generators.@nrwl/angular:component.inlineTemplate', true );
+	_.set( workspaceJson, 'generators.@nrwl/angular:component.inlineStyle', true );
 	await fse.outputFile( path.join( workspaceDir, 'workspace.json' ), JSON.stringify( workspaceJson, null, 2 )  );
 }
 
