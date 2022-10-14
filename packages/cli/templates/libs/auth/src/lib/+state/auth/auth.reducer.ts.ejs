@@ -1,0 +1,46 @@
+import { Action, createReducer, on } from '@ngrx/store';
+
+import { authenticatedInFirebase, loginToAppUserFailure, loginToAppUserSuccess, unauthenticatedInFirebase } from './auth.actions';
+
+export const AUTH_FEATURE_KEY = 'auth';
+
+export interface State {
+	authenticatedInFirebase?: boolean;
+	firebase?: {
+		id: string,
+		token: string
+	};
+	authenticatedToAdminUser?: boolean;
+	adminUser?: {
+		eid: string,
+		token: string,
+		refreshToken: string
+	},
+	adminUserErr?: string
+}
+
+export const initialState: State = {
+}
+
+export interface AuthPartialState {
+  readonly [AUTH_FEATURE_KEY]: State;
+}
+
+const authReducer = createReducer<State>(
+	initialState,
+	on( authenticatedInFirebase, ( state, { id, token } ): State => ( { ...state, authenticatedInFirebase: true, firebase: { id, token } } ) ),
+	on( unauthenticatedInFirebase, ( state ): State => ( { ...state, authenticatedInFirebase: false, authenticatedToAdminUser: false, firebase: undefined, } ) ),
+	on(
+		loginToAppUserSuccess,
+		( state, { id, token, refreshToken } ): State => ( {
+			...state,
+			authenticatedToAdminUser: true,
+			adminUser: { eid: id, token, refreshToken },
+		} )
+	),
+	on( loginToAppUserFailure, ( state, { err } ): State => ( { ...state, authenticatedToAdminUser: false, adminUser: undefined, adminUserErr: err } ) ),
+);
+
+export function reducer( state: State | undefined, action: Action ) {
+	return authReducer( state, action );
+}

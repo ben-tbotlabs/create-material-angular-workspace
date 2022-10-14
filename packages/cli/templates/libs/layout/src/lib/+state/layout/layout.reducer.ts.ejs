@@ -5,11 +5,11 @@ import { hideSideNav, showSideNav, toggleSideNav } from './layout.actions';
 export const LAYOUT_FEATURE_KEY = 'layout';
 
 export interface State {
-	opened: boolean;
+	sideNavOpened: boolean,
 }
 
 export const initialState: State = {
-	opened: false
+	sideNavOpened: false,
 }
 
 export interface LayoutPartialState {
@@ -18,9 +18,9 @@ export interface LayoutPartialState {
 
 const layoutReducer = createReducer<State>(
 	initialState,
-	on( showSideNav, ( state ): State => ( { ...state, opened: true } ) ),
-	on( hideSideNav, ( state ): State => ( { ...state, opened: false } ) ),
-	on( toggleSideNav, ( state ): State => ( { ...state, opened: !state.opened } ) )
+	on( showSideNav, ( state ): State => ( { ...state, sideNavOpened: true } ) ),
+	on( hideSideNav, ( state ): State => ( { ...state, sideNavOpened: false } ) ),
+	on( toggleSideNav, ( state ): State => ( { ...state, sideNavOpened: !state.sideNavOpened } ) ),
 );
 
 export function reducer( state: State | undefined, action: Action ) {

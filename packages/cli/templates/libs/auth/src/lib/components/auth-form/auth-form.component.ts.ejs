@@ -1,0 +1,75 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { AuthPartialState } from '../../+state/auth/auth.reducer';
+import { selectAdminUserError } from '../../+state/auth/auth.selectors';
+
+@Component( {
+	template: `
+	<div class="flex flex-col h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-300">
+		<mat-toolbar color="primary">
+			<div class="flex flex-row items-center">
+				<a routerLink="/">LOGO</a>
+			</div>
+		</mat-toolbar>
+		<mat-sidenav-container class="flex-grow">
+			<mat-sidenav-content>
+				<div class="flex flex-col items-center justify-center w-full p-3">
+					<mat-card class="w-1/2">
+						<div class="flex flex-col items-center">
+							<h1>Welcome to <%- workspace %> <%- app %></h1>
+							<h2>Please Sign In</h2>
+						</div>
+						<firebase-ui (uiShown)="uiShownCallback()"></firebase-ui>
+					</mat-card>
+				</div>
+			</mat-sidenav-content>
+		</mat-sidenav-container>
+		<div class="mt-auto">
+			<div class="flex flex-grow justify-end">
+				<footer class="pr-2">
+					<small class="text-muted">©<%- workspace %></small>
+				</footer>
+			</div>
+		</div>
+	</div>
+	`,
+} )
+export class AuthFormComponent implements OnInit, OnDestroy {
+	projectName = 'admin';
+
+	private subscriptions = new Subscription();
+
+	constructor( private readonly store: Store<AuthPartialState>, private snackBar: MatSnackBar ) {}
+
+	ngOnInit() {
+		const sub = this.store.select( selectAdminUserError ).pipe(
+			tap( ( err ) => {
+				if ( !err ) {
+					return;
+				}
+
+				this.showBasicErrorToaster( `AUTH ISSUE: ${  err }` );
+			} ),
+		).subscribe();
+		this.subscriptions.add( sub );
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
+	}
+
+	uiShownCallback() {
+		console.log( 'Showing Login Options' );
+	}
+
+	showBasicErrorToaster( text: string ) {
+		// tailwindcss offers alert classes:
+		// https://v1.tailwindcss.com/components/alerts
+		const alertCssClasses = [ 'border', 'border-t-0', 'border-red-400', 'rounded-b', 'bg-red-100', 'px-4', 'py-3', 'text-red-700' ];
+		this.snackBar.open( text, 'Close',  { verticalPosition: 'top', horizontalPosition: 'right', panelClass: alertCssClasses } );
+	}
+}

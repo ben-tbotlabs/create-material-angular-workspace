@@ -1,0 +1,50 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AdminMaterialModule } from '@<%- workspace %>/<%- app %>/material';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { FirebaseUIModule } from 'firebaseui-angular';
+
+import { AuthEffects } from './+state/auth/auth.effects';
+import * as fromAuth from './+state/auth/auth.reducer';
+import { AuthFormComponent } from './components/auth-form/auth-form.component';
+import { IsLoggedInGuard } from './is-logged-in.guard';
+
+const routes: Routes = [
+	{
+		path: 'signup',
+		component: AuthFormComponent,
+		data: { tab: 'signup' }
+	},
+	{
+		path: 'signin',
+		component: AuthFormComponent,
+		data: { tab: 'signin' }
+	},
+	{
+		path: 'logout',
+		loadChildren: () => import( './components/logout/logout.module' ).then( ( m ) => m.LogoutModule ),
+	},
+];
+
+
+@NgModule( {
+	declarations: [
+		AuthFormComponent
+	],
+	imports: [
+		CommonModule,
+		AdminMaterialModule,
+		RouterModule.forChild( routes ),
+
+		StoreModule.forFeature( fromAuth.AUTH_FEATURE_KEY, fromAuth.reducer ),
+		EffectsModule.forFeature( [ AuthEffects ] ),
+
+		FirebaseUIModule.forFeature( {} ),
+	],
+	exports: [
+	],
+	providers: [ IsLoggedInGuard ],
+} )
+export class <%- _.capitalize( app ) %>AuthModule {}

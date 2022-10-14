@@ -4,9 +4,11 @@ import { Component } from '@angular/core';
 @Component( {
 	selector: '<%- app %>-layout-footer',
 	template: `
-		<footer class="flex justify-end pr-1">
-			<small class="text-muted">©<%- workspace %></small>
-		</footer>
+		<div class="flex flex-grow justify-end">
+			<footer class="pr-2">
+				<small class="text-muted">©<%- workspace %></small>
+			</footer>
+		</div>
 	`,
 } )
 export class LayoutFooterComponent {

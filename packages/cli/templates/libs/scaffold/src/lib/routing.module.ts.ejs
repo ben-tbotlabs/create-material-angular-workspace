@@ -1,18 +1,39 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Route, RouterModule, Routes } from '@angular/router';
+import { IsLoggedInGuard } from '@<%- workspace %>/<%- app %>/auth';
 import { <%- _.capitalize( app ) %>LayoutComponent } from '@<%- workspace %>/<%- app %>/layout';
+
+function GetLayoutRoutes(): Route[] {
+	const routes: Route[] = [];
+	return routes;
+}
 
 const routes: Routes = [
 	{
 		path: '',
 		component: <%- _.capitalize( app ) %>LayoutComponent,
+		canActivate: [ IsLoggedInGuard ],
 		children: [
+			{
+				path: '',
+				pathMatch: 'full',
+				redirectTo: 'dashboard'
+			},
+			{
+				path: 'dashboard',
+				loadChildren: () => import( '@<%- workspace %>/<%- app %>/dashboard' ).then( ( m ) => m.<%- _.capitalize( app ) %>DashboardModule ),
+			},
 			{
 				path: 'not-found',
 				loadChildren: () => import( './not-found/not-found.module' ).then( ( m ) => m.NotFoundModule ),
 			},
+			...GetLayoutRoutes()
 		],
+	},
+	{
+		path: '',
+		loadChildren: () => import( '@<%- workspace %>/<%- app %>/auth' ).then( ( m ) => m.AdminAuthModule ),
 	},
 	{ path: '**', redirectTo: '/not-found' },
 ]

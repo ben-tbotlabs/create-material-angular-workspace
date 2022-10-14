@@ -1,0 +1,13 @@
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+
+import { AUTH_FEATURE_KEY, State } from './auth.reducer';
+
+export const selectAuthState = createFeatureSelector<State>(
+	AUTH_FEATURE_KEY
+);
+
+export const selectIsFirebaseAuthenticated = createSelector( selectAuthState, ( state: State ) => state.authenticatedInFirebase )
+
+export const selectIsAdminUserAuthenticated = createSelector( selectAuthState, ( state: State ) => state.authenticatedToAdminUser )
+
+export const selectAdminUserError = createSelector( selectAuthState, ( state: State ) => state.adminUserErr )

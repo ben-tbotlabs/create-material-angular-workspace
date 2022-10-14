@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access,  @typescript-eslint/no-unsafe-assignment */
+
 import { NgModule } from '@angular/core';
 //import { EntityDataModule } from '@ngrx/data';
 import { EffectsModule } from '@ngrx/effects';
@@ -5,31 +7,32 @@ import { routerReducer, RouterState, StoreRouterConnectingModule } from '@ngrx/r
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
-import { environment } from '../environments/environment';
+declare let process: any;
+const env: string = process.env.NODE_ENV;
+const isProduction = env === 'production';
 
 @NgModule( {
 	imports: [
-
 		StoreModule.forRoot(
 			{
-				router: routerReducer
+				router: routerReducer,
 			},
 			{
-				metaReducers: !environment.production ? [] : [],
+				metaReducers: !isProduction ? [] : [],
 				runtimeChecks: {
 					strictStateImmutability: true,
 					strictActionImmutability: true,
 					strictActionSerializability: true,
-					strictStateSerializability: true
+					strictStateSerializability: true,
 				},
 			}
 		),
 		EffectsModule.forRoot( [] ),
 		//!environment.production ? StoreDevtoolsModule.instrument() : [],
-		StoreDevtoolsModule.instrument( { maxAge: 25, logOnly: environment.production } ),
+		StoreDevtoolsModule.instrument( { maxAge: 25, logOnly: isProduction } ),
 		StoreRouterConnectingModule.forRoot( {
 			stateKey: 'router',
-			routerState: RouterState.Minimal
+			routerState: RouterState.Minimal,
 		} ),
 		//EntityDataModule.forRoot( {} ),
 	],
@@ -39,6 +42,8 @@ import { environment } from '../environments/environment';
 		StoreDevtoolsModule,
 		StoreRouterConnectingModule,
 		//EntityDataModule
-	]
+	],
 } )
 export class <%- _.capitalize( app ) %>NgRxModule {}
+
+/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access,  @typescript-eslint/no-unsafe-assignment */

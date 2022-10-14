@@ -1,0 +1,36 @@
+import { createAction, props } from '@ngrx/store';
+
+export const authenticatedInFirebase = createAction(
+	'[Auth] Authenticated in Firebase',
+	props<{ id: string; token: string }>()
+);
+
+export const unauthenticatedInFirebase = createAction(
+	'[Auth] Unauthenticated in Firebase'
+);
+
+export const loginToAppUser = createAction(
+	'[Auth] Login to App User',
+	props<{ firebaseToken: string }>()
+);
+
+export const loginToAppUserSuccess = createAction(
+	'[Auth] Login to App User Success',
+	props<{ id: string; token: string; refreshToken: string }>()
+);
+
+export const loginToAppUserFailure = createAction(
+	'[Auth] Login to App User Failure',
+	props<{ err: string }>()
+);
+
+export const logoutOfAppUser = createAction( '[Auth] Logout of App User' );
+
+export const logoutOfAppUserSuccess = createAction(
+	'[Auth] Logout of App User Success'
+);
+
+export const logoutOfAppUserFailure = createAction(
+	'[Auth] Logout of App User Failure',
+	props<{ err: string }>()
+);

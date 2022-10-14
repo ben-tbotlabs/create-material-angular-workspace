@@ -1,0 +1,158 @@
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { getSelectors, RouterReducerState } from '@ngrx/router-store';
+import { createFeatureSelector, Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import {
+	catchError,
+	concatMap,
+	map,
+	tap,
+} from 'rxjs/operators';
+
+import { AuthService } from '../../auth.service';
+import * as AuthActions from './auth.actions';
+
+export interface RouterPartialState {
+	readonly ['router']: RouterReducerState;
+}
+
+export const selectRouter = createFeatureSelector<RouterReducerState>( 'router' );
+
+const { selectQueryParam, selectUrl } = getSelectors( selectRouter );
+
+@Injectable()
+export class AuthEffects {
+	constructor(
+		private readonly actions$: Actions,
+		private readonly router: Router,
+		private readonly authService: AuthService,
+		private readonly store: Store
+	) {}
+
+	// If we have been authenticated in firebase then attempt to log us in as an app user
+	loginAsAppUser$ = createEffect( () => {
+		return this.actions$.pipe(
+			ofType( AuthActions.authenticatedInFirebase ),
+			concatMap( ( { id, token } ) =>
+				this.authService.loginAsAppUser( id, token ).pipe(
+					map( ( res ) =>
+						AuthActions.loginToAppUserSuccess( {
+							id,
+							token: res.token,
+							refreshToken: res.refreshToken,
+						} )
+					),
+					catchError( ( err: unknown ) =>
+						of(
+							AuthActions.loginToAppUserFailure( {
+								err: ( err as Error ).toString(),
+							} )
+						)
+					)
+				)
+			)
+		);
+	} );
+
+	// If we got an action that we are not authenticated in firebase, then check to see if we need to logout the admin user
+	logoutAsAppUserIfLoggedIn$ = createEffect(
+		() => {
+			return this.actions$.pipe(
+				ofType( AuthActions.unauthenticatedInFirebase ),
+				tap( () => {
+					this.authService.logoutOfAdminUser();
+				} )
+			);
+		},
+		{ dispatch: false }
+	);
+
+	loginAsAppUserSuccess$ = createEffect(
+		() => {
+			return this.actions$.pipe(
+				ofType( AuthActions.loginToAppUserSuccess ),
+				concatLatestFrom( () => [
+					this.store.select( selectQueryParam( 'redirect_uri' ) ),
+					this.store.select( selectUrl ),
+				] ),
+				tap( ( [ { id, token, refreshToken }, redirect, url ] ) => {
+					console.log( 'Logging in as ', id );
+					localStorage.setItem( 'refreshToken', refreshToken );
+					localStorage.setItem( 'token', token );
+					let where = redirect || url || '/';
+					switch ( where ) {
+						case '/signin':
+						case '/signup': {
+							where = '/';
+							break;
+						}
+						default: {
+							break;
+						}
+					}
+					void this.router.navigateByUrl( where );
+				} )
+			);
+		},
+		{ dispatch: false }
+	);
+
+	loginAsAppUserFailure$ = createEffect(
+		() => {
+			return this.actions$.pipe(
+				ofType( AuthActions.loginToAppUserFailure ),
+				tap( () => {
+					localStorage.clear();
+				} ),
+				map( () => void this.authService.logoutOfFirebase() )
+			);
+		},
+		{ dispatch: false }
+	);
+
+	logout$ = createEffect( () => {
+		return this.actions$.pipe(
+			ofType( AuthActions.logoutOfAppUser ),
+			concatMap( () =>
+				this.authService.logout().pipe(
+					map( () => AuthActions.logoutOfAppUserSuccess() ),
+					catchError( ( err: unknown ) => {
+						return of(
+							AuthActions.logoutOfAppUserFailure( {
+								err: ( err as Error ).toString(),
+							} )
+						);
+					} )
+				)
+			)
+		);
+	} );
+
+	logoutOfAppUserSuccess$ = createEffect(
+		() => {
+			return this.actions$.pipe(
+				ofType( AuthActions.logoutOfAppUserSuccess ),
+				concatLatestFrom( () => [
+					this.store.select( selectQueryParam( 'redirect_uri' ) ),
+					this.store.select( selectUrl ),
+				] ),
+				tap( ( [ , redirect, url ] ) => {
+					let where = redirect || url || '/';
+					switch ( where ) {
+						case '/logout': {
+							where = '/signin';
+							break;
+						}
+						default: {
+							break;
+						}
+					}
+					void this.router.navigateByUrl( where );
+				} )
+			);
+		},
+		{ dispatch: false }
+	);
+}

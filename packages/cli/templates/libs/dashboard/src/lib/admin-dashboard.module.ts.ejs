@@ -1,0 +1,29 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { <%- _.capitalize( app ) %>MaterialModule } from '@<%- workspace %>/<%- app %>/material';
+
+import { <%- _.capitalize( app ) %>DashboardComponent } from './admin-dashboard.component';
+
+const routes: Routes = [
+	{
+		path: '',
+		pathMatch: 'full',
+		component: <%- _.capitalize( app ) %>DashboardComponent
+	}
+];
+
+
+@NgModule( {
+	declarations: [
+		<%- _.capitalize( app ) %>DashboardComponent
+	],
+	imports: [
+		CommonModule,
+		RouterModule.forChild( routes ),
+
+		<%- _.capitalize( app ) %>MaterialModule,
+	],
+
+} )
+export class <%- _.capitalize( app ) %>DashboardModule {}

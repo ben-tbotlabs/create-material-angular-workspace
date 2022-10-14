@@ -1,0 +1,55 @@
+import { Injectable } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Store } from '@ngrx/store';
+import firebase from 'firebase/compat/app';
+import { defer, forkJoin, from, Observable, of } from 'rxjs';
+
+import {
+	authenticatedInFirebase,
+	unauthenticatedInFirebase,
+} from './+state/auth/auth.actions';
+
+@Injectable( {
+	providedIn: 'root',
+} )
+export class AuthService {
+	constructor( private fireAuth: AngularFireAuth, private store: Store ) {}
+
+	public initAuthListener() {
+		this.fireAuth.authState.subscribe( ( user ) => {
+			void this.checkAndDispatch( user );
+		} );
+	}
+
+	private async checkAndDispatch( user: firebase.User | null ) {
+		if ( user != null ) {
+			const token = await user.getIdToken();
+			if ( token ) {
+				const id = user.displayName || user.email || user.uid;
+				this.store.dispatch( authenticatedInFirebase( { id, token } ) );
+				return;
+			}
+		}
+
+		this.store.dispatch( unauthenticatedInFirebase() );
+	}
+
+	public loginAsAppUser(
+		id: string,
+		token: string
+	): Observable<{ id: string; token: string; refreshToken: string }> {
+		return of( { id, token, refreshToken: token } );
+	}
+
+	public logoutOfFirebase(): Observable<void> {
+		return defer( () => from( this.fireAuth.signOut() ) );
+	}
+
+	public logoutOfAdminUser(): Observable<object> {
+		return of( {} );
+	}
+
+	public logout(): Observable<[void, object]> {
+		return forkJoin( [ this.logoutOfFirebase(), this.logoutOfAdminUser() ] );
+	}
+}

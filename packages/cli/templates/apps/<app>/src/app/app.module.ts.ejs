@@ -1,21 +1,32 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { FirebaseUIModule } from 'firebaseui-angular';
 
 import { <%- _.capitalize( app ) %>ScaffoldModule } from '@<%- workspace %>/<%- app %>/scaffold';
 
+import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 
 @NgModule( {
 	declarations: [ AppComponent ],
 	imports: [
 		BrowserModule,
-		RouterModule,
+		RouterModule.forRoot([], { initialNavigation: 'enabledBlocking' }),
 		BrowserAnimationsModule,
-		<%- _.capitalize( app ) %>ScaffoldModule
+
+		AngularFireModule.initializeApp(environment.firebaseConfig),
+		AngularFireAuthModule,
+		FirebaseUIModule.forRoot(environment.firebaseUiAuthConfig),
+
+		<%- _.capitalize( app ) %>ScaffoldModule,
 	],
-	providers: [],
+	providers: [
+		AngularFireAuth
+	],
 	bootstrap: [ AppComponent ],
 } )
 export class AppModule {}

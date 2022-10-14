@@ -1,7 +1,35 @@
-import { Component } from '@angular/core'
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '@<%- workspace %>/<%- app %>/auth';
+
+import { environment } from '../environments/environment';
 
 @Component({
-  selector: '<%- workspace %>-root',
-  template: '<router-outlet></router-outlet>',
+	selector: '<%- workspace %>-<%- app %>-root',
+	template: `
+		<ng-container *ngIf="missingAPIKey">
+			<div class="flex flex-col">
+				<div class="text-red-500 text-lg p-4">
+					ERROR
+				</div>
+				<div class="text-black-500 text-lg p-4">
+					<%- layout %>/apps/<%- app %>/src/environments/environment.ts:
+					Missing Firebase Configuration
+				</div>
+			</div>
+		</ng-container>
+		<div class="flex flex-col h-full">
+			<div class="flex-grow">
+				<router-outlet></router-outlet>
+			</div>
+		</div>
+	`,
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+	missingAPIKey = !environment?.firebaseConfig?.apiKey;
+
+	constructor( private authService: AuthService ) {}
+
+	ngOnInit() {
+		this.authService.initAuthListener();
+	}
+}

@@ -1,0 +1,39 @@
+import { Injectable } from '@angular/core'
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { AuthPartialState } from './+state/auth/auth.reducer';
+import * as AuthSelectors from './+state/auth/auth.selectors';
+
+@Injectable()
+export class IsLoggedInGuard implements CanActivate, CanActivateChild, CanLoad {
+	constructor( private readonly store: Store<AuthPartialState>, private readonly router: Router ) {}
+
+	canActivate( next: ActivatedRouteSnapshot, state: RouterStateSnapshot ): Observable<boolean | UrlTree> {
+		return this.isAuthenticated( state.url );
+	}
+
+	canActivateChild(): Observable<boolean | UrlTree> {
+		return this.isAuthenticated()
+	}
+
+	canLoad(): Observable<boolean | UrlTree> {
+		return this.isAuthenticated()
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	private isAuthenticated( url?: string ): Observable<boolean | UrlTree> {
+		return this.store.select( AuthSelectors.selectIsAdminUserAuthenticated ).pipe(
+			map( authenticated => {
+				if ( authenticated !== true ) {
+					return this.router.createUrlTree( [ '/signin' ], {
+						queryParams: { redirect_uri: url },
+					} )
+				}
+				return true;
+			} )
+		)
+	}
+}

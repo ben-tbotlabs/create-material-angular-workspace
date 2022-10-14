@@ -1,9 +1,9 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import { LAYOUT_FEATURE_KEY, LayoutPartialState, State } from './layout.reducer';
+import { LAYOUT_FEATURE_KEY, State } from './layout.reducer';
 
-export const getLayoutState = createFeatureSelector<LayoutPartialState, State>(
+export const selectLayoutState = createFeatureSelector<State>(
 	LAYOUT_FEATURE_KEY
 );
 
-export const selectIsSidenavOpen = createSelector( getLayoutState, ( state: State ) => state.opened );
+export const selectIsSidenavOpen = createSelector( selectLayoutState, ( state: State ) => state.sideNavOpened );

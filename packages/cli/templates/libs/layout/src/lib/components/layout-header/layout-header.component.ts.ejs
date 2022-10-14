@@ -4,17 +4,28 @@ import { Store } from '@ngrx/store';
 import {  toggleSideNav } from '../../+state/layout/layout.actions';
 
 @Component( {
-	selector: '<%- app %>-layout-header',
+	selector: 'admin-layout-header',
 	template: `
-		<div class="flex flex-row items-center">
+		<div class="flex flex-row items-center w-full">
 			<button mat-icon-button (click)="this.onToggleSidenav()">
 				<mat-icon>menu</mat-icon>
 			</button>
-			<a routerLink="/">LOGO</a>
+			<div class="flex-grow">
+				<a routerLink="/">LOGO</a>
+			</div>
+			<div class="flex">
+				<mat-menu #appMenu="matMenu">
+					<ng-template matMenuContent>
+						<button mat-menu-item [routerLink]="['/logout']"><mat-icon>logout</mat-icon><span>Logout</span></button>
+					</ng-template>
+				</mat-menu>
+
+				<button mat-icon-button [matMenuTriggerFor]="appMenu">
+					<mat-icon>more_vert</mat-icon>
+				</button>
+			</div>
 		</div>
-	`,
-	styles: [
-	]
+	`
 } )
 export class LayoutHeaderComponent  {
 	constructor( private store: Store ) {}

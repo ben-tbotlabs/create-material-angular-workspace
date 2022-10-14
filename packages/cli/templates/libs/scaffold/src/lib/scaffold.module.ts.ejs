@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-//import { FlexLayoutModule } from '@angular/flex-layout';
+import { <%- _.capitalize( app ) %>AuthModule } from '@<%- workspace %>/<%- app %>/auth';
 import { <%- _.capitalize( app ) %>LayoutModule } from '@<%- workspace %>/<%- app %>/layout';
 import { <%- _.capitalize( app ) %>MaterialModule } from '@<%- workspace %>/<%- app %>/material';
 
@@ -10,8 +10,8 @@ import { <%- _.capitalize( app ) %>RoutingModule } from './routing.module';
 @NgModule( {
 	imports: [
 		CommonModule,
-		//FlexLayoutModule,
 
+		<%- _.capitalize( app ) %>AuthModule,
 		<%- _.capitalize( app ) %>LayoutModule,
 		<%- _.capitalize( app ) %>MaterialModule,
 
