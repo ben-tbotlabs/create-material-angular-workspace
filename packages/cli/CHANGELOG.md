@@ -2,6 +2,17 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/ben-tbotlabs/create-material-angular-workspace/compare/cli-0.1.2...cli-0.2.0) (2022-10-14)
+
+
+### Features
+
+* **angular:** :sparkles: Now support Angular 12 ([39210f9](https://github.com/ben-tbotlabs/create-material-angular-workspace/commit/39210f9e7f90773ce17b37b3364189acc9f56c02))
+* **auth:** :sparkles: Add full auth system using firebase ([5a0ff66](https://github.com/ben-tbotlabs/create-material-angular-workspace/commit/5a0ff6624395a96c22bd40f2a75fc5b801dc520b))
+* **tailwind:** :sparkles: Add support for tailwind (https://tailwindcss.com/) and convert from angular.json to workspace.json ([3865737](https://github.com/ben-tbotlabs/create-material-angular-workspace/commit/3865737fa3c19812e8c60759fd4fdcee8b780ed3))
+
+
+
 ## [0.1.2](https://github.com/ben-tbotlabs/create-material-angular-workspace/compare/cli-0.1.1...cli-0.1.2) (2021-04-26)
 
 
