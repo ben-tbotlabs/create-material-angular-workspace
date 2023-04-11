@@ -73,6 +73,9 @@ function runNCU( workspaceDir: string ) {
 		'jest',
 		'jest-environment-jsdom',
 		'ts-jest',
+		'typescript',
+		'zone.js',
+		'tslib',
 	]
 
 	const excludes = excluded.join( ',' );
@@ -127,6 +130,7 @@ async function main() {
 		const nxJson = JSON.parse( nxStr );
 		_.set( nxJson, 'workspaceLayout.appsDir', `${ layout }/apps` );
 		_.set( nxJson, 'workspaceLayout.libsDir', `${ layout }/libs` );
+		_.set( nxJson, 'defaultProject', 'admin' );
 		await fse.outputFile( nxPath, JSON.stringify( nxJson, null, 2 )  );
 
 		await fse.remove( path.join( workspaceDir, 'apps' ) );
@@ -134,12 +138,12 @@ async function main() {
 	}
 
 	execSync( 'npm install -D @nrwl/node @nrwl/angular @angular-devkit/architect', { cwd: workspaceDir } );
-	execSync( `nx generate @nrwl/angular:app ${ app } --style=scss --routing=true --linter=eslint`, { cwd: workspaceDir } );
+	execSync( `nx generate @nrwl/angular:app ${ app } --style=scss --routing=true --linter=eslint --standalone=false`, { cwd: workspaceDir } );
 	runNCU( workspaceDir );
 
 	// Add Angular Material
 	execSync( 'npm install @angular/material', { cwd: workspaceDir } );
-	let materialCmd = 'nx generate @angular/material:ng-add --typography --animations=enabled';
+	let materialCmd = `nx generate @angular/material:ng-add --typography --animations=enabled --project=${ app }`;
 	if ( theme ) {
 		materialCmd += ` --theme=${ theme }`;
 	}
@@ -150,13 +154,10 @@ async function main() {
 
 	runNCU( workspaceDir );
 
-	await addAngularLocalize( workspaceDir, appSourceDir );
-
-	//Add Angular FlexBox directives
-	execSync( 'npm install @angular/flex-layout@latest', { cwd: workspaceDir } );
+	addAngularLocalize( workspaceDir, appSourceDir );
 
 	//Add NgRx
-	execSync( `nx g @nrwl/angular:ngrx app --module=${ path.join( appsRelative, app, 'src', 'app', 'app.module.ts' ) } --root --no-interactive`, { cwd: workspaceDir } );
+	execSync( `nx g @nrwl/angular:ngrx app --parent=${ path.join( appsRelative, app, 'src', 'app', 'app.module.ts' ) } --root --no-interactive`, { cwd: workspaceDir } );
 	runNCU( workspaceDir );
 	execSync( 'npm install @ngrx/data', { cwd: workspaceDir } );
 
@@ -211,25 +212,25 @@ async function main() {
 
 	execSync( 'nx run-many --target=lint --all --fix --parallel --maxParallel=8', { cwd: workspaceDir } );
 	execSync( 'nx run-many --target=test --all', { cwd: workspaceDir } );
-	execSync( 'nx build', { cwd: workspaceDir } );
+	execSync( `nx build ${ app }`, { cwd: workspaceDir } );
 }
 
 void ( async () => {
 	await main();
 } )();
 
-async function addAngularLocalize( workspaceDir: string, appSourceDir: string ) {
+function addAngularLocalize( workspaceDir: string, appSourceDir: string ) {
 	execSync( 'npm install @angular/localize@latest', { cwd: workspaceDir } );
-	const polyfillStr = await fse.readFile( path.join( appSourceDir, 'polyfills.ts' ), 'utf8' );
-	const polyfill = `
-/***************************************************************************************************
- * Load \`$localize\` onto the global scope - used if i18n tags appear in Angular templates.
- */
-import '@angular/localize/init';
+	// 	const polyfillStr = await fse.readFile( path.join( appSourceDir, 'polyfills.ts' ), 'utf8' );
+	// 	const polyfill = `
+	// /***************************************************************************************************
+	//  * Load \`$localize\` onto the global scope - used if i18n tags appear in Angular templates.
+	//  */
+	// import '@angular/localize/init';
 
-${ polyfillStr }
-`;
-	await fse.outputFile( path.join( appSourceDir, 'polyfills.ts' ), polyfill  );
+// ${ polyfillStr }
+// `;
+// 	await fse.outputFile( path.join( appSourceDir, 'polyfills.ts' ), polyfill  );
 }
 
 async function adjustApp( workspaceDir: string, appDir: string, libsDir: string, layout: string, workspace: string, app: string ) {
